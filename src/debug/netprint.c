@@ -151,7 +151,6 @@ static void *NetDbgSendTreadFunction(void *pVoid)
 			iAddrLen = sizeof(struct sockaddr);
 			iSendLen = sendto(g_iSocketServer, strTmpBuf, i, 0,
 			                      (const struct sockaddr *)&g_tSocketClientAddr, iAddrLen);
-
 		}
 
 	}
@@ -305,7 +304,8 @@ static int NetDbgPrint(char *strData)
 {
 	/* 把数据放入环形缓冲区 */
 	int i;
-	
+	//这里如果缓冲区满了, 直接break了但是打印数据有可能没全部放入,岂不是丢失数据了
+	//而且这个是最顶层函数了, 上面直接调用的DebugPrint, 上层应该不会有判断了
 	for (i = 0; i < strlen(strData); i++)
 	{
 		if (0 != PutData(strData[i]))

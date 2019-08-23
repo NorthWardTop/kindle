@@ -4,35 +4,29 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+//调试选项头指针
 static PT_DebugOpr g_ptDebugOprHead;
+//调试级别高于或等于g_iDbgLevelLimit的调试信息才会打印出来
 static int g_iDbgLevelLimit = 8;
 
-/**********************************************************************
- * 函数名称： RegisterDispOpr
- * 功能描述： 注册"调试通道", 把PT_DebugOpr结构体放入链表中
- * 输入参数： ptDebugOpr - 一个结构体,表示调试通道
- * 输出参数： 无
- * 返 回 值： 0 - 成功, 其他值 - 失败
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+
+/**
+ * 注册调试对象: 讲调试选项加入到调试选项列表
+ * @ptDebugOpr: 调试对象指针
+ * @return: 0
+ */
 int RegisterDebugOpr(PT_DebugOpr ptDebugOpr)
 {
 	PT_DebugOpr ptTmp;
 
-	if (!g_ptDebugOprHead)
-	{
+	if (!g_ptDebugOprHead) {
 		g_ptDebugOprHead   = ptDebugOpr;
 		ptDebugOpr->ptNext = NULL;
-	}
-	else
-	{
+	} else {
 		ptTmp = g_ptDebugOprHead;
 		while (ptTmp->ptNext)
-		{
 			ptTmp = ptTmp->ptNext;
-		}
+
 		ptTmp->ptNext	  = ptDebugOpr;
 		ptDebugOpr->ptNext = NULL;
 	}
@@ -40,66 +34,42 @@ int RegisterDebugOpr(PT_DebugOpr ptDebugOpr)
 	return 0;
 }
 
-/**********************************************************************
- * 函数名称： ShowDebugOpr
- * 功能描述： 显示本程序能支持的"调试模块"
- * 输入参数： 无
- * 输出参数： 无
- * 返 回 值： 无
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+/**
+ * 显示所有调试选项: 打印调试选项链表
+ */
 void ShowDebugOpr(void)
 {
 	int i = 0;
 	PT_DebugOpr ptTmp = g_ptDebugOprHead;
 
-	while (ptTmp)
-	{
+	while (ptTmp) {
 		DBG_PRINTF("%02d %s\n", i++, ptTmp->name);
 		ptTmp = ptTmp->ptNext;
 	}
 }
 
-/**********************************************************************
- * 函数名称： GetDebugOpr
- * 功能描述： 根据名字取出指定的"调试模块"
- * 输入参数： pcName - 名字
- * 输出参数： 无
- * 返 回 值： NULL   - 失败,没有指定的模块, 
- *            非NULL - 显示模块的PT_DebugOpr结构体指针
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+/**
+ * 获取调试选项: 根据名字取出指定的"调试模块"地址返回
+ * @return: 获取成功返回非NULL, 获取失败返回NULL
+ */
 PT_DebugOpr GetDebugOpr(char *pcName)
 {
 	PT_DebugOpr ptTmp = g_ptDebugOprHead;
 	
-	while (ptTmp)
-	{
+	while (ptTmp) {
 		if (strcmp(ptTmp->name, pcName) == 0)
-		{
 			return ptTmp;
-		}
 		ptTmp = ptTmp->ptNext;
 	}
 	return NULL;
 }
 
 
-/**********************************************************************
- * 函数名称： SetDbgLevel
- * 功能描述： 设置打印级别g_iDbgLevelLimit: 级别范围0~7, 数字越小级别越高
- *            高于或等于g_iDbgLevelLimit的调试信息才会打印出来
- * 输入参数： strBuf - 类似"dbglevel=3"
- * 输出参数： 无
- * 返 回 值： 0   - 成功
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+/**
+ * 设置打印限制级: 级别>=g_iDbgLevelLimit会输出
+ * @strBuf: 类似与"dbglevel=3"
+ * @return: 0
+ */
 int SetDbgLevel(char *strBuf)
 {
 	g_iDbgLevelLimit = strBuf[9] - '0';
