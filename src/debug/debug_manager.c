@@ -76,21 +76,15 @@ int SetDbgLevel(char *strBuf)
 	return 0;
 }
 
-/**********************************************************************
- * 函数名称： SetDbgChanel
- * 功能描述： 开/关某个调试通道
- * 输入参数： strBuf - 类似于以下字符串
+/**
+ * 打开或关闭调试选项
+ * @strBuf: 类似于以下字符串
  *                     stdout=0			   : 关闭stdout打印
  *                     stdout=1			   : 打开stdout打印
  *                     netprint=0		   : 关闭netprint打印
  *                     netprint=1		   : 打开netprint打印
- * 输出参数： 无
- * 返 回 值： 0   - 成功
- *            -1  - 失败
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+ * @return: 成功返回0, 失败返回-1
+ */
 int SetDbgChanel(char *strBuf)
 {
 	char *pStrTmp;
@@ -120,22 +114,18 @@ int SetDbgChanel(char *strBuf)
 	
 }
 
-/**********************************************************************
- * 函数名称： DebugPrint
- * 功能描述： 打印信息的总入口函数
- *            程序里用DBG_PRINTF来打印, 它就是DebugPrint
+
+/**
+ * 向上提供的打印接口函数: 程序里用DBG_PRINTF来打印, 它就是DebugPrint
  *            在config.h里有这样的宏定义: #define DBG_PRINTF DebugPrint
- * 输入参数： 可变参数,用法和printf完全一样
- * 输出参数： 无
- * 返 回 值： 0   - 成功
- *            -1  - 失败
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+ * @pcFormat: 同printf, 格式化字符串
+ * @...: 格式化字符串参数
+ * @return: 0 - 成功
+ * 			-1 - 失败
+ */
 int DebugPrint(const char *pcFormat, ...)
 {
-	char strTmpBuf[1000];
+	char strTmpBuf[1024];
 	char *pcTmp;
 	va_list tArg;
 	int iNum;
@@ -146,67 +136,48 @@ int DebugPrint(const char *pcFormat, ...)
 	va_start (tArg, pcFormat);
 	iNum = vsprintf (strTmpBuf, pcFormat, tArg);
 	va_end (tArg);
-	strTmpBuf[iNum] = '\0';
+	strTmpBuf[iNum] = '\0'; //格式化转换后的字符串
 
 
 	pcTmp = strTmpBuf;
 	
 	/* 根据打印级别决定是否打印 */
     /*SetDbgLevel =6 */
-	if ((strTmpBuf[0] == '<') && (strTmpBuf[2] == '>'))
-	{
+	if ((strTmpBuf[0] == '<') && (strTmpBuf[2] == '>')) {
 		dbglevel = strTmpBuf[1] - '0';
 		if (dbglevel >= 0 && dbglevel <= 9)
-		{
-			pcTmp = strTmpBuf + 3;
-		}
+			pcTmp = strTmpBuf + 3; //在打印级别内就去掉 "<3>"
 		else
-		{
-			dbglevel = DEFAULT_DBGLEVEL;
-		}
+			dbglevel = DEFAULT_DBGLEVEL; //不在打印级别内就默认值
 	}
-
+	//低于打印级别直接返回, 不用打印
 	if (dbglevel > g_iDbgLevelLimit)
-	{
 		return -1;
-	}
 
 	/* 调用链表中所有isCanUse为1的结构体的DebugPrint函数 
 	 * 用来输出调试信息
 	 */
-	while (ptTmp)
-	{
+	while (ptTmp) {
 		if (ptTmp->isCanUse)
-		{
 			ptTmp->DebugPrint(pcTmp);
-		}
 		ptTmp = ptTmp->ptNext;
 	}
 
 	return 0;
-	
 }
 
-/**********************************************************************
- * 函数名称： InitDebugChanel
- * 功能描述： 有些打印通道需要进行一些初始化, 比如网络打印需要绑定端口等等
- *            本函数用于执行这些初始化
- * 输入参数： 无
- * 输出参数： 无
- * 返 回 值： 0 - 成功, 其他值 - 失败
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+
+/**
+ * 初始化所有需要初始化的打印选项通道, 比如网络打印的绑定端口
+ * @return: 0
+ */
 int InitDebugChanel(void)
 {
 	PT_DebugOpr ptTmp = g_ptDebugOprHead;
-	while (ptTmp)
-	{
+	while (ptTmp) {
+		//开关打开并且需要初始化的打印通道
 		if (ptTmp->isCanUse && ptTmp->DebugInit)
-		{
 			ptTmp->DebugInit();
-		}
 		ptTmp = ptTmp->ptNext;
 	}
 
@@ -214,20 +185,14 @@ int InitDebugChanel(void)
 }
 
 
-/**********************************************************************
- * 函数名称： DebugInit
- * 功能描述： 注册调试通道,就是把PT_DebugOpr注册到链表中
- * 输入参数： 无
- * 输出参数： 无
- * 返 回 值： 0 - 成功, 其他值 - 失败
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+/**
+ * 注册所有打印选项
+ * @return: 0
+ */
 int DebugInit(void)
 {
 	int iError;
-
+	//加入两个打印选项
 	iError = StdoutInit();
 	iError |= NetPrintInit();
 	return iError;
