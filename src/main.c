@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	{
 		DBG_PRINTF("FontsInit error!\n");
 	}
-  
+
     /* 设置freetype字库所用的文件和字体尺寸 */
 	iError = SetFontsDetail("freetype", argv[1], 24);
 	if (iError)

@@ -7,32 +7,23 @@ static PT_DispOpr g_ptDispOprHead;
 static PT_DispOpr g_ptDefaultDispOpr;
 static PT_VideoMem g_ptVideoMemHead;
 
-/**********************************************************************
- * º¯ÊýÃû³Æ£º RegisterDispOpr
- * ¹¦ÄÜÃèÊö£º ×¢²á"ÏÔÊ¾Ä£¿é", °ÑËùÄÜÖ§³ÖµÄÏÔÊ¾Éè±¸µÄ²Ù×÷º¯Êý·ÅÈëÁ´±í
- * ÊäÈë²ÎÊý£º ptDispOpr - Ò»¸ö½á¹¹Ìå,ÄÚº¬ÏÔÊ¾Éè±¸µÄ²Ù×÷º¯Êý
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º 0 - ³É¹¦, ÆäËûÖµ - Ê§°Ü
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
- ***********************************************************************/
+
+/**
+ * æ³¨å†Œä¸€ä¸ªæ˜¾ç¤ºé€‰é¡¹
+ * @ptDispOpr: æ˜¾ç¤ºé€‰é¡¹å¯¹è±¡çš„æŒ‡é’ˆ
+ * @return: 0
+ */
 int RegisterDispOpr(PT_DispOpr ptDispOpr)
 {
 	PT_DispOpr ptTmp;
 
-	if (!g_ptDispOprHead)
-	{
+	if (!g_ptDispOprHead) {
 		g_ptDispOprHead   = ptDispOpr;
 		ptDispOpr->ptNext = NULL;
-	}
-	else
-	{
+	} else {
 		ptTmp = g_ptDispOprHead;
 		while (ptTmp->ptNext)
-		{
 			ptTmp = ptTmp->ptNext;
-		}
 		ptTmp->ptNext	  = ptDispOpr;
 		ptDispOpr->ptNext = NULL;
 	}
@@ -41,131 +32,94 @@ int RegisterDispOpr(PT_DispOpr ptDispOpr)
 }
 
 
-/**********************************************************************
- * º¯ÊýÃû³Æ£º ShowDispOpr
- * ¹¦ÄÜÃèÊö£º ÏÔÊ¾±¾³ÌÐòÄÜÖ§³ÖµÄ"ÏÔÊ¾Ä£¿é"
- * ÊäÈë²ÎÊý£º ÎÞ
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º ÎÞ
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
- ***********************************************************************/
+/**
+ * æ˜¾ç¤ºå½“å‰ç¨‹åºæ”¯æŒçš„æ˜¾ç¤ºé€‰é¡¹, æ‰“å°é“¾è¡¨
+ * @return: NULL
+ */
 void ShowDispOpr(void)
 {
 	int i = 0;
 	PT_DispOpr ptTmp = g_ptDispOprHead;
 
-	while (ptTmp)
-	{
+	while (ptTmp) {
 		printf("%02d %s\n", i++, ptTmp->name);
 		ptTmp = ptTmp->ptNext;
 	}
 }
 
-/**********************************************************************
- * º¯ÊýÃû³Æ£º GetDispOpr
- * ¹¦ÄÜÃèÊö£º ¸ù¾ÝÃû×ÖÈ¡³öÖ¸¶¨µÄ"ÏÔÊ¾Ä£¿é"
- * ÊäÈë²ÎÊý£º pcName - Ãû×Ö
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º NULL   - Ê§°Ü,Ã»ÓÐÖ¸¶¨µÄÄ£¿é, 
- *            ·ÇNULL - ÏÔÊ¾Ä£¿éµÄPT_DispOpr½á¹¹ÌåÖ¸Õë
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
- ***********************************************************************/
+
+/**
+ * æ ¹æ®åå­—èŽ·å–ä¸€ä¸ªæ˜¾ç¤ºé€‰é¡¹
+ * @pcName: æ˜¾ç¤ºé€‰é¡¹åç§°
+ * @return: æ˜¾ç¤ºé€‰é¡¹æŒ‡é’ˆ, é“¾è¡¨å¯¹åº”èŠ‚ç‚¹æŒ‡é’ˆ
+ */
 PT_DispOpr GetDispOpr(char *pcName)
 {
 	PT_DispOpr ptTmp = g_ptDispOprHead;
 	
-	while (ptTmp)
-	{
+	while (ptTmp) {
 		if (strcmp(ptTmp->name, pcName) == 0)
-		{
 			return ptTmp;
-		}
 		ptTmp = ptTmp->ptNext;
 	}
 	return NULL;
 }
 
-/**********************************************************************
- * º¯ÊýÃû³Æ£º SelectAndInitDefaultDispDev
- * ¹¦ÄÜÃèÊö£º ¸ù¾ÝÃû×ÖÈ¡³öÖ¸¶¨µÄ"ÏÔÊ¾Ä£¿é", µ÷ÓÃËüµÄ³õÊ¼»¯º¯Êý, ²¢ÇÒÇåÆÁ
- * ÊäÈë²ÎÊý£º name - Ãû×Ö
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º ÎÞ
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
- ***********************************************************************/
+
+/**
+ * æ ¹æ®åç§°èŽ·å–æ˜¾ç¤ºè®¾å¤‡å¹¶åˆå§‹åŒ–å’Œæ¸…å±
+ * @name: æ˜¾ç¤ºé€‰é¡¹åç§°
+ * return: NULL
+ */
 void SelectAndInitDefaultDispDev(char *name)
 {
 	g_ptDefaultDispOpr = GetDispOpr(name);
-	if (g_ptDefaultDispOpr)
-	{
+	if (g_ptDefaultDispOpr) {
 		g_ptDefaultDispOpr->DeviceInit();
 		g_ptDefaultDispOpr->CleanScreen(0);
 	}
 }
 
-/**********************************************************************
- * º¯ÊýÃû³Æ£º GetDefaultDispDev
- * ¹¦ÄÜÃèÊö£º ³ÌÐòÊÂÏÈÓÃSelectAndInitDefaultDispDevÑ¡ÔñÁËÏÔÊ¾Ä£¿é,
- *            ±¾º¯Êý·µ»Ø¸ÃÏÔÊ¾Ä£¿é
- * ÊäÈë²ÎÊý£º ÎÞ
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º ÏÔÊ¾Ä£¿éµÄPT_DispOpr½á¹¹ÌåÖ¸Õë
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
- ***********************************************************************/
+
+/**
+ * èŽ·å–ä¸€ä¸ªé»˜è®¤æ˜¾ç¤ºé€‰é¡¹
+ * 		ç¨‹åºåœ¨è¿™ä¹‹å‰ä½¿ç”¨SelectAndInitDefaultDispDevåˆå§‹åŒ–äº†
+ * 		å…¨å±€å˜é‡g_ptDefaultDispOpr
+ * @return: å…¨å±€å˜é‡, é»˜è®¤æ˜¾ç¤ºé€‰é¡¹
+ */
 PT_DispOpr GetDefaultDispDev(void)
 {
 	return g_ptDefaultDispOpr;
 }
 
-/**********************************************************************
- * º¯ÊýÃû³Æ£º GetDispResolution
- * ¹¦ÄÜÃèÊö£º »ñµÃËùÊ¹ÓÃµÄÏÔÊ¾Éè±¸µÄ·Ö±æÂÊºÍBPP
- * ÊäÈë²ÎÊý£º ÎÞ
- * Êä³ö²ÎÊý£º piXres - ´æX·Ö±æÂÊ
- *            piYres - ´æX·Ö±æÂÊ
- *            piBpp  - ´æBPP
- * ·µ »Ø Öµ£º 0  - ³É¹¦
- *            -1 - Ê§°Ü(Î´Ê¹ÓÃSelectAndInitDefaultDispDevÀ´Ñ¡ÔñÏÔÊ¾Ä£¿é)
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
- ***********************************************************************/
+
+/**
+ * èŽ·å–æ˜¾ç¤ºè®¾å¤‡çš„åˆ†è¾¨çŽ‡å’Œpbb
+ * @piXres: è¿”å›žxåˆ†è¾¨çŽ‡
+ * @piYres: è¿”å›žyåˆ†è¾¨çŽ‡
+ * @piBpp: è¿”å›žpbb(ä¸€ä¸ªè±¡ç´ ç”¨å¤šå°‘ä½æ¥è¡¨ç¤º)
+ * @return: 0 æˆåŠŸ, -1 å¤±è´¥
+ */
 int GetDispResolution(int *piXres, int *piYres, int *piBpp)
 {
-	if (g_ptDefaultDispOpr)
-	{
+	if (g_ptDefaultDispOpr) {
 		*piXres = g_ptDefaultDispOpr->iXres;
 		*piYres = g_ptDefaultDispOpr->iYres;
 		*piBpp  = g_ptDefaultDispOpr->iBpp;
 		return 0;
-	}
-	else
-	{
+	} else {
 		return -1;
 	}
 }
 
-/**********************************************************************
- * º¯ÊýÃû³Æ£º AllocVideoMem
- * ¹¦ÄÜÃèÊö£º VideoMem: Îª¼Ó¿ìÏÔÊ¾ËÙ¶È,ÎÒÃÇÊÂÏÈÔÚ»º´æÖÐ¹¹ÔìºÃÏÔÊ¾µÄÒ³ÃæµÄÊý¾Ý,
- *            (Õâ¸ö»º´æ³ÆÎªVideoMem)
- *            ÏÔÊ¾Ê±ÔÙ°ÑVideoMemÖÐµÄÊý¾Ý¸´ÖÆµ½Éè±¸µÄÏÔ´æÉÏ
- * ÊäÈë²ÎÊý£º iNum
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º 0  - ³É¹¦
- *            -1 - Ê§°Ü(Î´Ê¹ÓÃSelectAndInitDefaultDispDevÀ´Ñ¡ÔñÏÔÊ¾Ä£¿é)
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
- ***********************************************************************/
+
+/**
+ * åˆ†é…æ˜¾ç¤ºç¼“å­˜
+ * 		ä¸ºäº†åŠ å¿«æ˜¾ç¤ºé€Ÿåº¦, åœ¨æ˜¾ç¤ºå‰äº‹å…ˆæž„é€ å¥½æ˜¾ç¤ºæ•°æ®, 
+ * 		æ˜¾ç¤ºæ—¶å€™ç›´æŽ¥, æ˜¾ç¤ºæ—¶å€™ç›´æŽ¥å°†ç¼“å­˜å†…å­˜æ‹·è´åˆ°è®¾å¤‡æ˜¾å­˜
+ * @iNum: 
+ * @return: 0 æˆåŠŸ, -1å¤±è´¥
+ */
 int AllocVideoMem(int iNum)
 {
 	int i;
@@ -179,61 +133,56 @@ int AllocVideoMem(int iNum)
 
 	PT_VideoMem ptNew;
 
-	/* È·¶¨VideoMemµÄ´óÐ¡
+	/* ç¡®å®šVideoMemçš„å¤§å°
 	 */
 	GetDispResolution(&iXres, &iYres, &iBpp);
-	iVMSize = iXres * iYres * iBpp / 8;
-	iLineBytes = iXres * iBpp / 8;
+	iVMSize = iXres * iYres * iBpp / 8; //ä¸€å—å†…å­˜çš„å­—èŠ‚æ•°
+	iLineBytes = iXres * iBpp / 8; //ä¸€è¡Œå­—èŠ‚æ•°
 
-	/* ÏÈ°ÑÉè±¸±¾ÉíµÄframebuffer·ÅÈëÁ´±í
-	 * ·ÖÅäÒ»¸öT_VideoMem½á¹¹Ìå, ×¢ÒâÎÒÃÇÃ»ÓÐ·ÖÅäÀïÃæµÄtPixelDatas.aucPixelDatas
-	 * ¶øÊÇÈÃtPixelDatas.aucPixelDatasÖ¸ÏòÏÔÊ¾Éè±¸µÄframebuffer
+
+	/* å…ˆæŠŠè®¾å¤‡æœ¬èº«çš„framebufferæ”¾å…¥é“¾è¡¨
+	 * åˆ†é…ä¸€ä¸ªT_VideoMemç»“æž„ä½“, æ³¨æ„æˆ‘ä»¬æ²¡æœ‰åˆ†é…é‡Œé¢çš„tPixelDatas.aucPixelDatas
+	 * è€Œæ˜¯è®©tPixelDatas.aucPixelDatasæŒ‡å‘æ˜¾ç¤ºè®¾å¤‡çš„framebuffer
 	 */
 	ptNew = malloc(sizeof(T_VideoMem));
 	if (ptNew == NULL)
-	{
 		return -1;
-	}
 
-	/* Ö¸Ïòframebuffer */
+	/* æŒ‡å‘framebuffer */
 	ptNew->tPixelDatas.aucPixelDatas = g_ptDefaultDispOpr->pucDispMem;
 	
 	ptNew->iID = 0;
-	ptNew->bDevFrameBuffer = 1;        /* ±íÊ¾Õâ¸öVideoMemÊÇÉè±¸±¾ÉíµÄframebuffer, ¶ø²»ÊÇÓÃ×÷»º´æ×÷ÓÃµÄVideoMem */
-	ptNew->eVideoMemState  = VMS_FREE;
-	ptNew->ePicState	   = PS_BLANK;
+	ptNew->bDevFrameBuffer = 1;        /* è¡¨ç¤ºè¿™ä¸ªVideoMemæ˜¯è®¾å¤‡æœ¬èº«çš„framebuffer, è€Œä¸æ˜¯ç”¨ä½œç¼“å­˜ä½œç”¨çš„VideoMem */
+	ptNew->eVideoMemState  = VMS_FREE; //ç©ºé—²çŠ¶æ€
+	ptNew->ePicState	   = PS_BLANK; //å›¾ç‰‡çŠ¶æ€
 	ptNew->tPixelDatas.iWidth  = iXres;
 	ptNew->tPixelDatas.iHeight = iYres;
 	ptNew->tPixelDatas.iBpp    = iBpp;
-	ptNew->tPixelDatas.iLineBytes  = iLineBytes;
-	ptNew->tPixelDatas.iTotalBytes = iVMSize;
+	ptNew->tPixelDatas.iLineBytes  = iLineBytes; //è¡Œå­—èŠ‚æ•°
+	ptNew->tPixelDatas.iTotalBytes = iVMSize; //æ€»å­—èŠ‚æ•°
 
-	if (iNum != 0)
-	{
-		/* Èç¹ûÏÂÃæÒª·ÖÅäÓÃÓÚ»º´æµÄVideoMem, 
-		 * °ÑÉè±¸±¾Éíframebuffer¶ÔÓ¦µÄVideoMem×´Ì¬ÉèÖÃÎªVMS_USED_FOR_CUR,
-		 * ±íÊ¾Õâ¸öVideoMem²»»á±»×÷Îª»º´æ·ÖÅä³öÈ¥
+	if (iNum != 0) {
+		/* å¦‚æžœä¸‹é¢è¦åˆ†é…ç”¨äºŽç¼“å­˜çš„VideoMem, 
+		 * æŠŠè®¾å¤‡æœ¬èº«framebufferå¯¹åº”çš„VideoMemçŠ¶æ€è®¾ç½®ä¸ºVMS_USED_FOR_CUR,
+		 * è¡¨ç¤ºè¿™ä¸ªVideoMemä¸ä¼šè¢«ä½œä¸ºç¼“å­˜åˆ†é…å‡ºåŽ»
 		 */
 		ptNew->eVideoMemState = VMS_USED_FOR_CUR;
 	}
 	
-	/* ·ÅÈëÁ´±í */
+	/* æ”¾å…¥é“¾è¡¨ */
 	ptNew->ptNext = g_ptVideoMemHead;
 	g_ptVideoMemHead = ptNew;
 	
 
-	/*
-	 * ·ÖÅäÓÃÓÚ»º´æµÄVideoMem
+	/*tPixelDatas
+	 * åˆ†é…ç”¨äºŽç¼“å­˜çš„VideoMem
 	 */
-	for (i = 0; i < iNum; i++)
-	{
-		/* ·ÖÅäT_VideoMem½á¹¹Ìå±¾ÉíºÍ"¸úframebufferÍ¬Ñù´óÐ¡µÄ»º´æ" */
+	for (i = 0; i < iNum; i++) {
+		/* åˆ†é…T_VideoMemç»“æž„ä½“æœ¬èº«å’Œ"è·ŸframebufferåŒæ ·å¤§å°çš„ç¼“å­˜" */
 		ptNew = malloc(sizeof(T_VideoMem) + iVMSize);
-		if (ptNew == NULL)
-		{
-			return -1;
-		}
-		/* ÔÚT_VideoMem½á¹¹ÌåÀï¼ÇÂ¼ÉÏÃæ·ÖÅäµÄ"¸úframebufferÍ¬Ñù´óÐ¡µÄ»º´æ" */
+		if (ptNew == NULL) 
+			return -1; 
+		/* åœ¨T_VideoMemç»“æž„ä½“é‡Œè®°å½•ä¸Šé¢åˆ†é…çš„"è·ŸframebufferåŒæ ·å¤§å°çš„ç¼“å­˜" */
 		ptNew->tPixelDatas.aucPixelDatas = (unsigned char *)(ptNew + 1);
 
 		ptNew->iID = 0;
@@ -246,7 +195,7 @@ int AllocVideoMem(int iNum)
 		ptNew->tPixelDatas.iLineBytes = iLineBytes;
 		ptNew->tPixelDatas.iTotalBytes = iVMSize;
 
-		/* ·ÅÈëÁ´±í */
+		/* æ”¾å…¥é“¾è¡¨ */
 		ptNew->ptNext = g_ptVideoMemHead;
 		g_ptVideoMemHead = ptNew;
 	}
@@ -255,24 +204,27 @@ int AllocVideoMem(int iNum)
 }
 
 /**********************************************************************
- * º¯ÊýÃû³Æ£º GetVideoMem
- * ¹¦ÄÜÃèÊö£º »ñµÃÒ»¿é¿É²Ù×÷µÄVideoMem(ËüÓÃÓÚ´æ´¢ÒªÏÔÊ¾µÄÊý¾Ý), 
- *            ÓÃÍêºóÓÃPutVideoMemÀ´ÊÍ·Å
- * ÊäÈë²ÎÊý£º iID  - IDÖµ,ÏÈ³¢ÊÔÔÚÖÚ¶àVideoMemÖÐÕÒµ½IDÖµÏàÍ¬µÄ
- *            bCur - 1±íÊ¾µ±Ç°³ÌÐòÂíÉÏÒªÊ¹ÓÃVideoMem,ÎÞ·¨ÈçºÎ¶¼Òª·µ»ØÒ»¸öVideoMem
- *                   0±íÊ¾ÕâÊÇÎªÁË¸Ä½øÐÔÄÜ¶øÌáÇ°È¡µÃVideoMem,²»ÊÇ±ØÐèµÄ
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º NULL   - Ê§°Ü,Ã»ÓÐ¿ÉÓÃµÄVideoMem
- *            ·ÇNULL - ³É¹¦,·µ»ØPT_VideoMem½á¹¹Ìå
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
+ * å‡½æ•°åç§°ï¼š GetVideoMem
+ * åŠŸèƒ½æè¿°ï¼š èŽ·å¾—ä¸€å—å¯æ“ä½œçš„VideoMem(å®ƒç”¨äºŽå­˜å‚¨è¦æ˜¾ç¤ºçš„æ•°æ®), 
+ *            ç”¨å®ŒåŽç”¨PutVideoMemæ¥é‡Šæ”¾
+ * è¾“å…¥å‚æ•°ï¼š iID  - IDå€¼,å…ˆå°è¯•åœ¨ä¼—å¤šVideoMemä¸­æ‰¾åˆ°IDå€¼ç›¸åŒçš„
+ *            bCur - 1è¡¨ç¤ºå½“å‰ç¨‹åºé©¬ä¸Šè¦ä½¿ç”¨VideoMem,æ— æ³•å¦‚ä½•éƒ½è¦è¿”å›žä¸€ä¸ªVideoMem
+ *                   0è¡¨ç¤ºè¿™æ˜¯ä¸ºäº†æ”¹è¿›æ€§èƒ½è€Œæå‰å–å¾—VideoMem,ä¸æ˜¯å¿…éœ€çš„
+ * è¾“å‡ºå‚æ•°ï¼š æ— 
+ * è¿” å›ž å€¼ï¼š NULL   - å¤±è´¥,æ²¡æœ‰å¯ç”¨çš„VideoMem
+ *            éžNULL - æˆåŠŸ,è¿”å›žPT_VideoMemç»“æž„ä½“
+ * ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº	      ä¿®æ”¹å†…å®¹
  * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
+ * 2016/01/09	     V2.0	  åˆ˜é¹	      ä¿®æ”¹
  ***********************************************************************/
+
+/**
+ * 
 PT_VideoMem GetVideoMem(int iID, int bCur)
 {
 	PT_VideoMem ptTmp = g_ptVideoMemHead;
 	
-	/* 1. ÓÅÏÈ: È¡³ö¿ÕÏÐµÄ¡¢IDÏàÍ¬µÄvideomem */
+	/* 1. ä¼˜å…ˆ: å–å‡ºç©ºé—²çš„ã€IDç›¸åŒçš„videomem */
 	while (ptTmp)
 	{
 		if ((ptTmp->eVideoMemState == VMS_FREE) && (ptTmp->iID == iID))
@@ -283,7 +235,7 @@ PT_VideoMem GetVideoMem(int iID, int bCur)
 		ptTmp = ptTmp->ptNext;
 	}
 
-	/* 2. Èç¹ûÇ°Ãæ²»³É¹¦, È¡³öÒ»¸ö¿ÕÏÐµÄ²¢ÇÒÀïÃæÃ»ÓÐÊý¾Ý(ptVideoMem->ePicState = PS_BLANK)µÄVideoMem */
+	/* 2. å¦‚æžœå‰é¢ä¸æˆåŠŸ, å–å‡ºä¸€ä¸ªç©ºé—²çš„å¹¶ä¸”é‡Œé¢æ²¡æœ‰æ•°æ®(ptVideoMem->ePicState = PS_BLANK)çš„VideoMem */
 	ptTmp = g_ptVideoMemHead;
 	while (ptTmp)
 	{
@@ -296,7 +248,7 @@ PT_VideoMem GetVideoMem(int iID, int bCur)
 		ptTmp = ptTmp->ptNext;
 	}	
 	
-	/* 3. Èç¹ûÇ°Ãæ²»³É¹¦: È¡³öÈÎÒâÒ»¸ö¿ÕÏÐµÄVideoMem */
+	/* 3. å¦‚æžœå‰é¢ä¸æˆåŠŸ: å–å‡ºä»»æ„ä¸€ä¸ªç©ºé—²çš„VideoMem */
 	ptTmp = g_ptVideoMemHead;
 	while (ptTmp)
 	{
@@ -310,7 +262,7 @@ PT_VideoMem GetVideoMem(int iID, int bCur)
 		ptTmp = ptTmp->ptNext;
 	}
 
-    /* 4. Èç¹ûÃ»ÓÐ¿ÕÏÐµÄVideoMem²¢ÇÒbCurÎª1, ÔòÈ¡³öÈÎÒâÒ»¸öVideoMem(²»¹ÜËüÊÇ·ñ¿ÕÏÐ) */
+    /* 4. å¦‚æžœæ²¡æœ‰ç©ºé—²çš„VideoMemå¹¶ä¸”bCurä¸º1, åˆ™å–å‡ºä»»æ„ä¸€ä¸ªVideoMem(ä¸ç®¡å®ƒæ˜¯å¦ç©ºé—²) */
     if (bCur)
     {
     	ptTmp = g_ptVideoMemHead;
@@ -324,33 +276,33 @@ PT_VideoMem GetVideoMem(int iID, int bCur)
 }
 
 /**********************************************************************
- * º¯ÊýÃû³Æ£º PutVideoMem
- * ¹¦ÄÜÃèÊö£º Ê¹ÓÃGetVideoMem»ñµÃµÄVideoMem, ÓÃÍêÊ±ÓÃPutVideoMemÊÍ·Åµô
- * ÊäÈë²ÎÊý£º ptVideoMem - Ê¹ÓÃÍê±ÏµÄVideoMem
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º ÎÞ
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
+ * å‡½æ•°åç§°ï¼š PutVideoMem
+ * åŠŸèƒ½æè¿°ï¼š ä½¿ç”¨GetVideoMemèŽ·å¾—çš„VideoMem, ç”¨å®Œæ—¶ç”¨PutVideoMemé‡Šæ”¾æŽ‰
+ * è¾“å…¥å‚æ•°ï¼š ptVideoMem - ä½¿ç”¨å®Œæ¯•çš„VideoMem
+ * è¾“å‡ºå‚æ•°ï¼š æ— 
+ * è¿” å›ž å€¼ï¼š æ— 
+ * ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº	      ä¿®æ”¹å†…å®¹
  * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
+ * 2016/01/09	     V2.0	  åˆ˜é¹	      ä¿®æ”¹
  ***********************************************************************/
 void PutVideoMem(PT_VideoMem ptVideoMem)
 {
-	ptVideoMem->eVideoMemState = VMS_FREE;  /* ÉèÖÃVideoMem×´Ì¬Îª¿ÕÏÐ */
+	ptVideoMem->eVideoMemState = VMS_FREE;  /* è®¾ç½®VideoMemçŠ¶æ€ä¸ºç©ºé—² */
     if (ptVideoMem->iID == -1)
     {
-        ptVideoMem->ePicState = PS_BLANK;  /* ±íÊ¾ÀïÃæµÄÊý¾ÝÃ»ÓÐÓÃÁË */
+        ptVideoMem->ePicState = PS_BLANK;  /* è¡¨ç¤ºé‡Œé¢çš„æ•°æ®æ²¡æœ‰ç”¨äº† */
     }
 }
 
 /**********************************************************************
- * º¯ÊýÃû³Æ£º GetDevVideoMem
- * ¹¦ÄÜÃèÊö£º »ñµÃÏÔÊ¾Éè±¸µÄÏÔ´æ, ÔÚ¸ÃÏÔ´æÉÏ²Ù×÷¾Í¿ÉÒÔÖ±½ÓÔÚLCDÉÏÏÔÊ¾³öÀ´
- * ÊäÈë²ÎÊý£º ÎÞ
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º ÏÔ´æ¶ÔÓ¦µÄVideoMem½á¹¹ÌåÖ¸Õë
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
+ * å‡½æ•°åç§°ï¼š GetDevVideoMem
+ * åŠŸèƒ½æè¿°ï¼š èŽ·å¾—æ˜¾ç¤ºè®¾å¤‡çš„æ˜¾å­˜, åœ¨è¯¥æ˜¾å­˜ä¸Šæ“ä½œå°±å¯ä»¥ç›´æŽ¥åœ¨LCDä¸Šæ˜¾ç¤ºå‡ºæ¥
+ * è¾“å…¥å‚æ•°ï¼š æ— 
+ * è¾“å‡ºå‚æ•°ï¼š æ— 
+ * è¿” å›ž å€¼ï¼š æ˜¾å­˜å¯¹åº”çš„VideoMemç»“æž„ä½“æŒ‡é’ˆ
+ * ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº	      ä¿®æ”¹å†…å®¹
  * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
+ * 2016/01/09	     V2.0	  åˆ˜é¹	      ä¿®æ”¹
  ***********************************************************************/
 PT_VideoMem GetDevVideoMem(void)
 {
@@ -369,15 +321,15 @@ PT_VideoMem GetDevVideoMem(void)
 
 
 /**********************************************************************
- * º¯ÊýÃû³Æ£º ClearVideoMem
- * ¹¦ÄÜÃèÊö£º °ÑVideoMemÖÐÄÚ´æÈ«²¿ÇåÎªÄ³ÖÖÑÕÉ«
- * ÊäÈë²ÎÊý£º ptVideoMem - VideoMem½á¹¹ÌåÖ¸Õë, ÄÚº¬Òª²Ù×÷µÄÄÚ´æ
- *            dwColor    - ÉèÖÃÎª¸ÃÑÕÉ«
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º ÎÞ
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
+ * å‡½æ•°åç§°ï¼š ClearVideoMem
+ * åŠŸèƒ½æè¿°ï¼š æŠŠVideoMemä¸­å†…å­˜å…¨éƒ¨æ¸…ä¸ºæŸç§é¢œè‰²
+ * è¾“å…¥å‚æ•°ï¼š ptVideoMem - VideoMemç»“æž„ä½“æŒ‡é’ˆ, å†…å«è¦æ“ä½œçš„å†…å­˜
+ *            dwColor    - è®¾ç½®ä¸ºè¯¥é¢œè‰²
+ * è¾“å‡ºå‚æ•°ï¼š æ— 
+ * è¿” å›ž å€¼ï¼š æ— 
+ * ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº	      ä¿®æ”¹å†…å®¹
  * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
+ * 2016/01/09	     V2.0	  åˆ˜é¹	      ä¿®æ”¹
  ***********************************************************************/
 void ClearVideoMem(PT_VideoMem ptVideoMem, unsigned int dwColor)
 {
@@ -403,7 +355,7 @@ void ClearVideoMem(PT_VideoMem ptVideoMem, unsigned int dwColor)
 		}
 		case 16:
 		{
-			/* ÏÈ¸ù¾Ý32Î»µÄdwColor¹¹Ôì³ö16Î»µÄwColor16bpp */
+			/* å…ˆæ ¹æ®32ä½çš„dwColoræž„é€ å‡º16ä½çš„wColor16bpp */
 			iRed   = (dwColor >> (16+3)) & 0x1f;
 			iGreen = (dwColor >> (8+2)) & 0x3f;
 			iBlue  = (dwColor >> 3) & 0x1f;
@@ -437,16 +389,16 @@ void ClearVideoMem(PT_VideoMem ptVideoMem, unsigned int dwColor)
 
 
 /**********************************************************************
- * º¯ÊýÃû³Æ£º ClearVideoMemRegion
- * ¹¦ÄÜÃèÊö£º °ÑVideoMemÖÐÄÚ´æµÄÖ¸¶¨ÇøÓòÈ«²¿ÇåÎªÄ³ÖÖÑÕÉ«
- * ÊäÈë²ÎÊý£º ptVideoMem - VideoMem½á¹¹ÌåÖ¸Õë, ÄÚº¬Òª²Ù×÷µÄÄÚ´æ
- *            ptLayout   - ¾ØÐÎÇøÓò, Ö¸¶¨ÁË×óÉÏ½Ç,ÓÒÔÚ½ÇµÄ×ø±ê
- *            dwColor    - ÉèÖÃÎª¸ÃÑÕÉ«
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º ÎÞ
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
+ * å‡½æ•°åç§°ï¼š ClearVideoMemRegion
+ * åŠŸèƒ½æè¿°ï¼š æŠŠVideoMemä¸­å†…å­˜çš„æŒ‡å®šåŒºåŸŸå…¨éƒ¨æ¸…ä¸ºæŸç§é¢œè‰²
+ * è¾“å…¥å‚æ•°ï¼š ptVideoMem - VideoMemç»“æž„ä½“æŒ‡é’ˆ, å†…å«è¦æ“ä½œçš„å†…å­˜
+ *            ptLayout   - çŸ©å½¢åŒºåŸŸ, æŒ‡å®šäº†å·¦ä¸Šè§’,å³åœ¨è§’çš„åæ ‡
+ *            dwColor    - è®¾ç½®ä¸ºè¯¥é¢œè‰²
+ * è¾“å‡ºå‚æ•°ï¼š æ— 
+ * è¿” å›ž å€¼ï¼š æ— 
+ * ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº	      ä¿®æ”¹å†…å®¹
  * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
+ * 2016/01/09	     V2.0	  åˆ˜é¹	      ä¿®æ”¹
  ***********************************************************************/
 void ClearVideoMemRegion(PT_VideoMem ptVideoMem, PT_Layout ptLayout, unsigned int dwColor)
 {
@@ -481,7 +433,7 @@ void ClearVideoMemRegion(PT_VideoMem ptVideoMem, PT_Layout ptLayout, unsigned in
 		}
 		case 16:
 		{
-			/* ÏÈ¸ù¾Ý32Î»µÄdwColor¹¹Ôì³ö16Î»µÄwColor16bpp */
+			/* å…ˆæ ¹æ®32ä½çš„dwColoræž„é€ å‡º16ä½çš„wColor16bpp */
 			iRed   = (dwColor >> (16+3)) & 0x1f;
 			iGreen = (dwColor >> (8+2)) & 0x3f;
 			iBlue  = (dwColor >> 3) & 0x1f;
@@ -520,14 +472,14 @@ void ClearVideoMemRegion(PT_VideoMem ptVideoMem, PT_Layout ptLayout, unsigned in
 }
 
 /**********************************************************************
- * º¯ÊýÃû³Æ£º DisplayInit
- * ¹¦ÄÜÃèÊö£º ×¢²áÏÔÊ¾Éè±¸
- * ÊäÈë²ÎÊý£º ÎÞ
- * Êä³ö²ÎÊý£º ÎÞ
- * ·µ »Ø Öµ£º 0 - ³É¹¦, ÆäËûÖµ - Ê§°Ü
- * ÐÞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ÐÞ¸ÄÈË	      ÐÞ¸ÄÄÚÈÝ
+ * å‡½æ•°åç§°ï¼š DisplayInit
+ * åŠŸèƒ½æè¿°ï¼š æ³¨å†Œæ˜¾ç¤ºè®¾å¤‡
+ * è¾“å…¥å‚æ•°ï¼š æ— 
+ * è¾“å‡ºå‚æ•°ï¼š æ— 
+ * è¿” å›ž å€¼ï¼š 0 - æˆåŠŸ, å…¶ä»–å€¼ - å¤±è´¥
+ * ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº	      ä¿®æ”¹å†…å®¹
  * -----------------------------------------------
- * 2016/01/09	     V2.0	  ÁõÅô	      ÐÞ¸Ä
+ * 2016/01/09	     V2.0	  åˆ˜é¹	      ä¿®æ”¹
  ***********************************************************************/
 int DisplayInit(void)
 {
