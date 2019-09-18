@@ -117,7 +117,7 @@ int GetDispResolution(int *piXres, int *piYres, int *piBpp)
  * 分配显示缓存
  * 		为了加快显示速度, 在显示前事先构造好显示数据, 
  * 		显示时候直接, 显示时候直接将缓存内存拷贝到设备显存
- * @iNum: 
+ * @iNum: 内存块的数目, 一块一个屏幕
  * @return: 0 成功, -1失败
  */
 int AllocVideoMem(int iNum)
@@ -203,32 +203,22 @@ int AllocVideoMem(int iNum)
 	return 0;
 }
 
-/**********************************************************************
- * 函数名称： GetVideoMem
- * 功能描述： 获得一块可操作的VideoMem(它用于存储要显示的数据), 
- *            用完后用PutVideoMem来释放
- * 输入参数： iID  - ID值,先尝试在众多VideoMem中找到ID值相同的
- *            bCur - 1表示当前程序马上要使用VideoMem,无法如何都要返回一个VideoMem
- *                   0表示这是为了改进性能而提前取得VideoMem,不是必需的
- * 输出参数： 无
- * 返 回 值： NULL   - 失败,没有可用的VideoMem
- *            非NULL - 成功,返回PT_VideoMem结构体
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
 
 /**
- * 
+ * 取一块空闲内存
+ * @iID: 指定ID
+ * @bCur: 1表示当前程序马上要使用VideoMem,无论如何都要返回一个VideoMem
+ *        0表示这是为了改进性能而提前取得VideoMem,不是必需的
+ * @return: NULL 没有可用mem
+ * 			非NULL 成功, 并返回mem结构指针
+ */
 PT_VideoMem GetVideoMem(int iID, int bCur)
 {
 	PT_VideoMem ptTmp = g_ptVideoMemHead;
 	
 	/* 1. 优先: 取出空闲的、ID相同的videomem */
-	while (ptTmp)
-	{
-		if ((ptTmp->eVideoMemState == VMS_FREE) && (ptTmp->iID == iID))
-		{
+	while (ptTmp) {
+		if ((ptTmp->eVideoMemState == VMS_FREE) && (ptTmp->iID == iID)) {
 			ptTmp->eVideoMemState = bCur ? VMS_USED_FOR_CUR : VMS_USED_FOR_PREPARE;
 			return ptTmp;
 		}
@@ -237,23 +227,19 @@ PT_VideoMem GetVideoMem(int iID, int bCur)
 
 	/* 2. 如果前面不成功, 取出一个空闲的并且里面没有数据(ptVideoMem->ePicState = PS_BLANK)的VideoMem */
 	ptTmp = g_ptVideoMemHead;
-	while (ptTmp)
-	{
-		if ((ptTmp->eVideoMemState == VMS_FREE) && (ptTmp->ePicState == PS_BLANK))
-		{
+	while (ptTmp) {
+		if ((ptTmp->eVideoMemState == VMS_FREE) && (ptTmp->ePicState == PS_BLANK)) {
 			ptTmp->iID = iID;
 			ptTmp->eVideoMemState = bCur ? VMS_USED_FOR_CUR : VMS_USED_FOR_PREPARE;
 			return ptTmp;
 		}
 		ptTmp = ptTmp->ptNext;
-	}	
+	}
 	
 	/* 3. 如果前面不成功: 取出任意一个空闲的VideoMem */
 	ptTmp = g_ptVideoMemHead;
-	while (ptTmp)
-	{
-		if (ptTmp->eVideoMemState == VMS_FREE)
-		{
+	while (ptTmp) {
+		if (ptTmp->eVideoMemState == VMS_FREE) {
 			ptTmp->iID = iID;
 			ptTmp->ePicState = PS_BLANK;
 			ptTmp->eVideoMemState = bCur ? VMS_USED_FOR_CUR : VMS_USED_FOR_PREPARE;
@@ -263,8 +249,7 @@ PT_VideoMem GetVideoMem(int iID, int bCur)
 	}
 
     /* 4. 如果没有空闲的VideoMem并且bCur为1, 则取出任意一个VideoMem(不管它是否空闲) */
-    if (bCur)
-    {
+    if (bCur) {
     	ptTmp = g_ptVideoMemHead;
     	ptTmp->iID = iID;
     	ptTmp->ePicState = PS_BLANK;
@@ -275,62 +260,42 @@ PT_VideoMem GetVideoMem(int iID, int bCur)
 	return NULL;
 }
 
-/**********************************************************************
- * 函数名称： PutVideoMem
- * 功能描述： 使用GetVideoMem获得的VideoMem, 用完时用PutVideoMem释放掉
- * 输入参数： ptVideoMem - 使用完毕的VideoMem
- * 输出参数： 无
- * 返 回 值： 无
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+
+/**
+ * 将不使用的mem放入内存链表设置伟空闲
+ * 		Get获取, 使用完用Put释放到链表
+ * @ptVideoMem: 内存节点指针
+ */
 void PutVideoMem(PT_VideoMem ptVideoMem)
 {
 	ptVideoMem->eVideoMemState = VMS_FREE;  /* 设置VideoMem状态为空闲 */
-    if (ptVideoMem->iID == -1)
-    {
-        ptVideoMem->ePicState = PS_BLANK;  /* 表示里面的数据没有用了 */
-    }
+    if (ptVideoMem->iID == -1) 
+        ptVideoMem->ePicState = PS_BLANK;  /* 表示里面的数据没有用了 */ 
 }
 
-/**********************************************************************
- * 函数名称： GetDevVideoMem
- * 功能描述： 获得显示设备的显存, 在该显存上操作就可以直接在LCD上显示出来
- * 输入参数： 无
- * 输出参数： 无
- * 返 回 值： 显存对应的VideoMem结构体指针
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+
+/**
+ * 获得显示设备的显存, 在该显存上操作就可以直接在LCD上显示出来
+ * @return: 显存结构体指针
+ */
 PT_VideoMem GetDevVideoMem(void)
 {
 	PT_VideoMem ptTmp = g_ptVideoMemHead;
 	
-	while (ptTmp)
-	{
+	while (ptTmp) {
 		if (ptTmp->bDevFrameBuffer)
-		{
 			return ptTmp;
-		}
 		ptTmp = ptTmp->ptNext;
 	}
 	return NULL;
 }
 
 
-/**********************************************************************
- * 函数名称： ClearVideoMem
- * 功能描述： 把VideoMem中内存全部清为某种颜色
- * 输入参数： ptVideoMem - VideoMem结构体指针, 内含要操作的内存
- *            dwColor    - 设置为该颜色
- * 输出参数： 无
- * 返 回 值： 无
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+/**
+ * 把VideoMem中内存全部清为某种颜色
+ * @ptVideoMem: mem指针
+ * @dwColor: 颜色
+ */
 void ClearVideoMem(PT_VideoMem ptVideoMem, unsigned int dwColor)
 {
 	unsigned char *pucVM;
@@ -346,40 +311,34 @@ void ClearVideoMem(PT_VideoMem ptVideoMem, unsigned int dwColor)
 	pwVM16bpp  = (unsigned short *)pucVM;
 	pdwVM32bpp = (unsigned int *)pucVM;
 
-	switch (ptVideoMem->tPixelDatas.iBpp)
-	{
-		case 8:
-		{
+	switch (ptVideoMem->tPixelDatas.iBpp) {
+		case 8: {
+			//按字节为单位设置
 			memset(pucVM, dwColor, ptVideoMem->tPixelDatas.iTotalBytes);
 			break;
 		}
-		case 16:
-		{
+		case 16: {
 			/* 先根据32位的dwColor构造出16位的wColor16bpp */
-			iRed   = (dwColor >> (16+3)) & 0x1f;
-			iGreen = (dwColor >> (8+2)) & 0x3f;
-			iBlue  = (dwColor >> 3) & 0x1f;
+			iRed   = (dwColor >> (16+3)) & 0x1f;//取高22-26共5位
+			iGreen = (dwColor >> (8+2)) & 0x3f;//10-15共6位
+			iBlue  = (dwColor >> 3) & 0x1f;//3-7共5位
 			wColor16bpp = (iRed << 11) | (iGreen << 5) | iBlue;
-			while (i < ptVideoMem->tPixelDatas.iTotalBytes)
-			{
-				*pwVM16bpp	= wColor16bpp;
-				pwVM16bpp++;
-				i += 2;
+			while (i < ptVideoMem->tPixelDatas.iTotalBytes) {
+				*pwVM16bpp	= wColor16bpp;//每个16位都是这个颜色
+				pwVM16bpp++;//内存指针后移
+				i += 2;//short每2字节为单位
 			}
 			break;
 		}
-		case 32:
-		{
-			while (i < ptVideoMem->tPixelDatas.iTotalBytes)
-			{
+		case 32: {
+			while (i < ptVideoMem->tPixelDatas.iTotalBytes) {
 				*pdwVM32bpp = dwColor;
 				pdwVM32bpp++;
-				i += 4;
+				i += 4; //32位以四字节为单位
 			}
 			break;
 		}
-		default :
-		{
+		default: {
 			DBG_PRINTF("can't support %d bpp\n", ptVideoMem->tPixelDatas.iBpp);
 			return;
 		}
@@ -388,18 +347,12 @@ void ClearVideoMem(PT_VideoMem ptVideoMem, unsigned int dwColor)
 }
 
 
-/**********************************************************************
- * 函数名称： ClearVideoMemRegion
- * 功能描述： 把VideoMem中内存的指定区域全部清为某种颜色
- * 输入参数： ptVideoMem - VideoMem结构体指针, 内含要操作的内存
- *            ptLayout   - 矩形区域, 指定了左上角,右在角的坐标
- *            dwColor    - 设置为该颜色
- * 输出参数： 无
- * 返 回 值： 无
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+/**
+ * 将显示内存指定区域显设置为某种颜色
+ * @ptVideoMem: 要操作的内存
+ * @ptLayout: 矩形区域, 左上角右下角坐标
+ * @dwColor: 设置的颜色
+ */
 void ClearVideoMemRegion(PT_VideoMem ptVideoMem, PT_Layout ptLayout, unsigned int dwColor)
 {
 	unsigned char *pucVM;
