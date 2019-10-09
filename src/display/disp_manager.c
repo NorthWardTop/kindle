@@ -351,7 +351,7 @@ void ClearVideoMem(PT_VideoMem ptVideoMem, unsigned int dwColor)
  * 将显示内存指定区域显设置为某种颜色
  * @ptVideoMem: 要操作的内存
  * @ptLayout: 矩形区域, 左上角右下角坐标
- * @dwColor: 设置的颜色
+ * @dwColor: 设置的颜色(传入一个字32位的颜色)
  */
 void ClearVideoMemRegion(PT_VideoMem ptVideoMem, PT_Layout ptLayout, unsigned int dwColor)
 {
@@ -366,51 +366,49 @@ void ClearVideoMemRegion(PT_VideoMem ptVideoMem, PT_Layout ptLayout, unsigned in
 	int iY;
     int iLineBytesClear;
     int i;
+	//计算指针初始位置, 就是layout第一个像素点指针
+	//内存基址+顶部y*行字节数+左部x*像素字节(Layout前面半行)
+	pucVM	   = ptVideoMem->tPixelDatas.aucPixelDatas \
+				+ ptLayout->iTopLeftY * ptVideoMem->tPixelDatas.iLineBytes \
+				+ ptLayout->iTopLeftX * ptVideoMem->tPixelDatas.iBpp / 8;
 
-	pucVM	   = ptVideoMem->tPixelDatas.aucPixelDatas + ptLayout->iTopLeftY * ptVideoMem->tPixelDatas.iLineBytes + ptLayout->iTopLeftX * ptVideoMem->tPixelDatas.iBpp / 8;
-	pwVM16bpp  = (unsigned short *)pucVM;
-	pdwVM32bpp = (unsigned int *)pucVM;
-
+	pwVM16bpp  = (unsigned short *)pucVM;//16位一像素指针
+	pdwVM32bpp = (unsigned int *)pucVM;//32位一像素指针
+	//Layout一行字节数
     iLineBytesClear = (ptLayout->iBotRightX - ptLayout->iTopLeftX + 1) * ptVideoMem->tPixelDatas.iBpp / 8;
 
-	switch (ptVideoMem->tPixelDatas.iBpp)
-	{
-		case 8:
-		{
-            for (iY = ptLayout->iTopLeftY; iY <= ptLayout->iBotRightY; iY++)
-            {
+	switch (ptVideoMem->tPixelDatas.iBpp) {
+		case 8: {
+			//从矩形的左上y下降到矩形右下y, 设置每个layout行像素颜色
+            for (iY = ptLayout->iTopLeftY; iY <= ptLayout->iBotRightY; iY++) {
     			memset(pucVM, dwColor, iLineBytesClear);
-                pucVM += ptVideoMem->tPixelDatas.iLineBytes;
+                pucVM += ptVideoMem->tPixelDatas.iLineBytes; //指针每次移动一行个字节
             }
 			break;
 		}
-		case 16:
-		{
+		case 16: {
 			/* 先根据32位的dwColor构造出16位的wColor16bpp */
 			iRed   = (dwColor >> (16+3)) & 0x1f;
 			iGreen = (dwColor >> (8+2)) & 0x3f;
 			iBlue  = (dwColor >> 3) & 0x1f;
 			wColor16bpp = (iRed << 11) | (iGreen << 5) | iBlue;
-            for (iY = ptLayout->iTopLeftY; iY <= ptLayout->iBotRightY; iY++)
-            {
+            for (iY = ptLayout->iTopLeftY; iY <= ptLayout->iBotRightY; iY++) {
                 i = 0;
-                for (iX = ptLayout->iTopLeftX; iX <= ptLayout->iBotRightX; iX++)
-    			{
+				//每一个像素都是一个short
+                for (iX = ptLayout->iTopLeftX; iX <= ptLayout->iBotRightX; iX++) 
     				pwVM16bpp[i++]	= wColor16bpp;
-    			}
+    			//指针运算, 强转位32位加上一行字节数, 指向下一行??
                 pwVM16bpp = (unsigned short *)((unsigned int)pwVM16bpp + ptVideoMem->tPixelDatas.iLineBytes);
             }
 			break;
 		}
-		case 32:
-		{
-            for (iY = ptLayout->iTopLeftY; iY <= ptLayout->iBotRightY; iY++)
-            {
+		case 32: {
+            for (iY = ptLayout->iTopLeftY; iY <= ptLayout->iBotRightY; iY++) {
                 i = 0;
-                for (iX = ptLayout->iTopLeftX; iX <= ptLayout->iBotRightX; iX++)
-    			{
+				//每个像素都是一个字, 4字节
+                for (iX = ptLayout->iTopLeftX; iX <= ptLayout->iBotRightX; iX++) 
     				pdwVM32bpp[i++]	= dwColor;
-    			}
+
                 pdwVM32bpp = (unsigned int *)((unsigned int)pdwVM32bpp + ptVideoMem->tPixelDatas.iLineBytes);
             }
 			break;
