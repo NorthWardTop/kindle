@@ -413,8 +413,7 @@ void ClearVideoMemRegion(PT_VideoMem ptVideoMem, PT_Layout ptLayout, unsigned in
             }
 			break;
 		}
-		default :
-		{
+		default: {
 			DBG_PRINTF("can't support %d bpp\n", ptVideoMem->tPixelDatas.iBpp);
 			return;
 		}
@@ -422,16 +421,11 @@ void ClearVideoMemRegion(PT_VideoMem ptVideoMem, PT_Layout ptLayout, unsigned in
 
 }
 
-/**********************************************************************
- * 函数名称： DisplayInit
- * 功能描述： 注册显示设备
- * 输入参数： 无
- * 输出参数： 无
- * 返 回 值： 0 - 成功, 其他值 - 失败
- * 修改日期        版本号     修改人	      修改内容
- * -----------------------------------------------
- * 2016/01/09	     V2.0	  刘鹏	      修改
- ***********************************************************************/
+
+/**
+ * 注册显示设备
+ * @return: 错误码
+ */
 int DisplayInit(void)
 {
 	int iError;
