@@ -8,10 +8,10 @@
 #include <linux/fb.h>
 #include <string.h>
 
-static int FBDeviceInit(void);
-static int FBShowPixel(int iX, int iY, unsigned int dwColor);
-static int FBCleanScreen(unsigned int dwBackColor);
-static int FBShowPage(PT_VideoMem ptVideoMem);
+// static int FBDeviceInit(void);
+// static int FBShowPixel(int iX, int iY, unsigned int dwColor);
+// static int FBCleanScreen(unsigned int dwBackColor);
+// static int FBShowPage(PT_VideoMem ptVideoMem);
 
 
 static int g_fd;
@@ -24,13 +24,7 @@ static unsigned int g_dwScreenSize;
 static unsigned int g_dwLineWidth;
 static unsigned int g_dwPixelWidth;
 
-static T_DispOpr g_tFBOpr = {
-	.name        = "fb",
-	.DeviceInit  = FBDeviceInit,
-	.ShowPixel   = FBShowPixel,
-	.CleanScreen = FBCleanScreen,
-	.ShowPage    = FBShowPage,
-};
+
 
 /**
  * 显示设备初始化
@@ -232,6 +226,18 @@ static int FBCleanScreen(unsigned int dwBackColor)
 	return 0;
 }
 
+
+
+static T_DispOpr g_tFBOpr = {
+	.name        = "fb",
+	.DeviceInit  = FBDeviceInit,
+	.ShowPixel   = FBShowPixel,
+	.CleanScreen = FBCleanScreen,
+	.ShowPage    = FBShowPage,
+};
+
+
+
 /**********************************************************************
  * 函数名称： FBInit
  * 功能描述： 注册"framebuffer显示设备"
@@ -246,4 +252,5 @@ int FBInit(void)
 {
 	return RegisterDispOpr(&g_tFBOpr);
 }
+
 

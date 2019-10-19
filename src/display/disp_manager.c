@@ -429,7 +429,6 @@ void ClearVideoMemRegion(PT_VideoMem ptVideoMem, PT_Layout ptLayout, unsigned in
 int DisplayInit(void)
 {
 	int iError;
-	
 	iError = FBInit();
 
 	return iError;
