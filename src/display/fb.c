@@ -169,13 +169,11 @@ static int FBCleanScreen(unsigned int dwBackColor)
 
 	switch (g_tFBVar.bits_per_pixel)
 	{
-		case 8:
-		{
+		case 8: {
 			memset(g_pucFBMem, dwBackColor, g_dwScreenSize);
 			break;
 		}
-		case 16:
-		{
+		case 16: {
 			/* 从dwBackColor中取出红绿蓝三原色,
 			 * 构造为16Bpp的颜色
 			 */
@@ -183,26 +181,22 @@ static int FBCleanScreen(unsigned int dwBackColor)
 			iGreen = (dwBackColor >> (8+2)) & 0x3f;
 			iBlue  = (dwBackColor >> 3) & 0x1f;
 			wColor16bpp = (iRed << 11) | (iGreen << 5) | iBlue;
-			while (i < g_dwScreenSize)
-			{
+			while (i < g_dwScreenSize) {
 				*pwFB16bpp	= wColor16bpp;
 				pwFB16bpp++;
 				i += 2;
 			}
 			break;
 		}
-		case 32:
-		{
-			while (i < g_dwScreenSize)
-			{
+		case 32: {
+			while (i < g_dwScreenSize) {
 				*pdwFB32bpp	= dwBackColor;
 				pdwFB32bpp++;
 				i += 4;
 			}
 			break;
 		}
-		default :
-		{
+		default: {
 			DBG_PRINTF("can't support %d bpp\n", g_tFBVar.bits_per_pixel);
 			return -1;
 		}

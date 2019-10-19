@@ -3,9 +3,9 @@
 #include <disp_manager.h>
 #include <string.h>
 
-static PT_DispOpr g_ptDispOprHead;
-static PT_DispOpr g_ptDefaultDispOpr;
-static PT_VideoMem g_ptVideoMemHead;
+static PT_DispOpr g_ptDispOprHead;//显示选项链表
+static PT_DispOpr g_ptDefaultDispOpr; //默认显示选项
+static PT_VideoMem g_ptVideoMemHead; //显示内存链表
 
 
 /**

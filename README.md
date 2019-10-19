@@ -12,12 +12,12 @@
 1. 包括两个线程, 网络发送线程用于发送循环队列数据, 当调用NetDbgPrint函数时候
     会唤醒发送线程. 网络接受线程用于接受调试客户端发送的控制指令
 2. 调试控制命令包括:
-* setclient            : 设置接收打印信息的客户端
-* dbglevel=0,1,2...    : 修改打印级别
-* stdout=0             : 关闭stdout打印
-* stdout=1             : 打开stdout打印
-* netprint=0           : 关闭netprint打印
-* netprint=1           : 打开netprint打印
+    * setclient            : 设置接收打印信息的客户端
+    * dbglevel=0,1,2...    : 修改打印级别
+    * stdout=0             : 关闭stdout打印
+    * stdout=1             : 打开stdout打印
+    * netprint=0           : 关闭netprint打印
+    * netprint=1           : 打开netprint打印
 
 ## 3. stdout: 标准输出调试选项, 通过终端打印调试信息
 * 仅仅设置StdoutDebugPrint函数即可, printf即可
